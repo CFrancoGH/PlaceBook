@@ -1,13 +1,14 @@
 package com.raywenderlich.placebook
 
+import android.Manifest
 import android.content.pm.PackageManager
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
+import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import com.google.android.gms.location.FusedLocationProviderClient
+import com.google.android.gms.location.LocationRequest
 import com.google.android.gms.location.LocationServices
-
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
@@ -15,9 +16,10 @@ import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.MarkerOptions
 import com.raywenderlich.placebook.databinding.ActivityMapsBinding
-import java.util.jar.Manifest
 
 class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
+
+    private var locationRequest: LocationRequest? = null
 
     private lateinit var map: GoogleMap
     private lateinit var binding: ActivityMapsBinding
@@ -74,28 +76,19 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
     private fun getCurrentLocation() {
 
         if (ActivityCompat.checkSelfPermission(this,
-                android.Manifest.permission.ACCESS_FINE_LOCATION) !=
+                Manifest.permission.ACCESS_FINE_LOCATION) !=
             PackageManager.PERMISSION_GRANTED) {
-
             requestLocationPermissions()
         } else {
+            map.isMyLocationEnabled = true
 
             fusedLocationClient.lastLocation.addOnCompleteListener {
                 val location = it.result
                 if (location != null) {
-
-                    val latLng = LatLng(location.latitude,
-                        location.longitude)
-
-                    map.addMarker(MarkerOptions().position(latLng)
-                        .title("You are here!"))
-                    // 6
-                    val update = CameraUpdateFactory.newLatLngZoom(latLng,
-                        16.0f)
-
+                    val latLng = LatLng(location.latitude, location.longitude)
+                    val update = CameraUpdateFactory.newLatLngZoom(latLng, 16.0f)
                     map.moveCamera(update)
                 } else {
-
                     Log.e(TAG, "No location found")
                 }
             }
