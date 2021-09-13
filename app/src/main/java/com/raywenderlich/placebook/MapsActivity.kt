@@ -1,32 +1,31 @@
-package ui
+package com.raywenderlich.placebook
 
 import android.Manifest
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
 import android.os.Bundle
 import android.util.Log
-import androidx.activity.viewModels
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import com.google.android.gms.common.api.ApiException
 import com.google.android.gms.location.FusedLocationProviderClient
+import com.google.android.gms.location.LocationRequest
 import com.google.android.gms.location.LocationServices
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.LatLng
-import com.google.android.gms.maps.model.Marker
 import com.google.android.gms.maps.model.MarkerOptions
 import com.google.android.gms.maps.model.PointOfInterest
+import com.raywenderlich.placebook.databinding.ActivityMapsBinding
 import com.google.android.libraries.places.api.Places
 import com.google.android.libraries.places.api.model.Place
 import com.google.android.libraries.places.api.net.FetchPhotoRequest
 import com.google.android.libraries.places.api.net.FetchPlaceRequest
 import com.google.android.libraries.places.api.net.PlacesClient
-import com.raywenderlich.placebook.R
 import com.raywenderlich.placebook.adapter.BookmarkInfoWindowAdapter
-import viewmodel.MapsViewModel
 
 class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
 
@@ -39,8 +38,6 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
         private const val REQUEST_LOCATION = 1
         private const val TAG = "MapsActivity"
     }
-
-    private val mapsViewModel by viewModels<MapsViewModel>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -67,17 +64,11 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
      */
     override fun onMapReady(googleMap: GoogleMap) {
         map = googleMap
-        setupMapListeners()
-        getCurrentLocation()
-        }
-
-
-    private fun setupMapListeners(){
         map.setInfoWindowAdapter(BookmarkInfoWindowAdapter(this))
+        getCurrentLocation()
         map.setOnPoiClickListener {
             displayPoi(it)
         }
-        map.setOnInfoWindowClickListener { handleInfoWindowClick(it) }
     }
 
     private fun setupPlacesClient() {
@@ -94,8 +85,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
     private fun requestLocationPermissions() {
         ActivityCompat.requestPermissions(this,
             arrayOf(android.Manifest.permission.ACCESS_FINE_LOCATION),
-            REQUEST_LOCATION
-        )
+            REQUEST_LOCATION)
     }
 
     private fun getCurrentLocation() {
@@ -161,8 +151,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
             }.addOnFailureListener { exception ->
                 if (exception is ApiException) {
                     val statusCode = exception.statusCode
-                    Log.e(
-                        TAG,
+                    Log.e(TAG,
                         "Place not found: " +
                                 exception.message + ", " +
                                 "statusCode: " + statusCode)
@@ -197,19 +186,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
             .title(place.name)
             .snippet(place.phoneNumber)
         )
-        marker?.tag = PlaceInfo(place, photo)
+        marker?.tag = photo
     }
-
-    private fun handleInfoWindowClick(marker: Marker) {
-        val placeInfo = (marker.tag as PlaceInfo)
-        if (placeInfo.place != null) {
-            mapsViewModel.addBookmarkFromPlace(placeInfo.place, placeInfo.image)
-        }
-        marker.remove()
-    }
-
-
-
-class PlaceInfo(val place: Place? = null, val image: Bitmap? = null)
 
 }
