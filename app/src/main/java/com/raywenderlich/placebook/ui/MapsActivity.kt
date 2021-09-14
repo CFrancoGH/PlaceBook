@@ -68,8 +68,8 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
     override fun onMapReady(googleMap: GoogleMap) {
         map = googleMap
         setupMapListeners()
-        //createBookmarkMarkerObserver()
         getCurrentLocation()
+        //createBookmarkMarkerObserver()
         }
 
 
@@ -222,6 +222,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
                 BitmapDescriptorFactory.defaultMarker(
                 BitmapDescriptorFactory.HUE_AZURE))
             .alpha(0.8f))
+
         marker.tag = bookmark
         return marker
     }
