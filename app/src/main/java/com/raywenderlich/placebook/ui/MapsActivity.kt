@@ -69,14 +69,17 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
     override fun onMapReady(googleMap: GoogleMap) {
         map = googleMap
         setupMapListeners()
+        createBookmarkMarkerObserver()
         getCurrentLocation()
-        //createBookmarkMarkerObserver()
+
         }
 
 
     private fun setupPlacesClient() {
-        Places.initialize(applicationContext,
-        getString(R.string.google_maps_key))
+        Places.initialize(
+            applicationContext,
+            getString(R.string.google_maps_key)
+        )
         placesClient = Places.createClient(this)
     }
 
@@ -86,7 +89,8 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
     }
 
     private fun requestLocationPermissions() {
-        ActivityCompat.requestPermissions(this,
+        ActivityCompat.requestPermissions(
+            this,
             arrayOf(Manifest.permission.ACCESS_FINE_LOCATION),
             REQUEST_LOCATION
         )
@@ -94,9 +98,12 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
 
     private fun getCurrentLocation() {
 
-        if (ActivityCompat.checkSelfPermission(this,
-                Manifest.permission.ACCESS_FINE_LOCATION) !=
-            PackageManager.PERMISSION_GRANTED) {
+        if (ActivityCompat.checkSelfPermission(
+                this,
+                Manifest.permission.ACCESS_FINE_LOCATION
+            ) !=
+            PackageManager.PERMISSION_GRANTED
+        ) {
             requestLocationPermissions()
         } else {
 
@@ -118,7 +125,8 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
     override fun onRequestPermissionsResult(
         requestCode: Int,
         permissions: Array<String>,
-        grantResults: IntArray) {
+        grantResults: IntArray
+    ) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
         if (requestCode == REQUEST_LOCATION) {
             if (grantResults.size == 1 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
@@ -133,8 +141,10 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
         displayPoiGetPlaceStep(pointOfInterest)
     }
 
-    private fun displayPoiGetPlaceStep(pointOfInterest:
-                                       PointOfInterest) {
+    private fun displayPoiGetPlaceStep(
+        pointOfInterest:
+        PointOfInterest
+    ) {
         val placeId = pointOfInterest.placeId
 
         val placeFields = listOf(
@@ -143,7 +153,8 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
             Place.Field.PHONE_NUMBER,
             Place.Field.PHOTO_METADATAS,
             Place.Field.ADDRESS,
-            Place.Field.LAT_LNG)
+            Place.Field.LAT_LNG
+        )
 
         val request = FetchPlaceRequest
             .builder(placeId, placeFields)
@@ -160,13 +171,14 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
                         TAG,
                         "Place not found: " +
                                 exception.message + ", " +
-                                "statusCode: " + statusCode)
+                                "statusCode: " + statusCode
+                    )
                 }
             }
     }
 
     private fun displayPoiGetPhotoStep(place: Place) {
-        val photoMetadata = place.getPhotoMetadatas()?.get(0)
+        val photoMetadata = place.photoMetadatas?.get(0)
         if (photoMetadata == null) {
             displayPoiDisplayStep(place, null)
             return
@@ -217,12 +229,16 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
     }
 
     private fun addPlaceMarker(bookmark: MapsViewModel.BookmarkMarkerView): Marker? {
-        val marker = map.addMarker(MarkerOptions()
+        val marker = map.addMarker(
+            MarkerOptions()
             .position(bookmark.location)
             .icon(
                 BitmapDescriptorFactory.defaultMarker(
-                BitmapDescriptorFactory.HUE_AZURE))
-            .alpha(0.8f))
+                BitmapDescriptorFactory.HUE_AZURE
+                )
+            )
+            .alpha(0.8f)
+        )
 
         marker.tag = bookmark
         return marker
